@@ -1,0 +1,13 @@
+/.direnv
+/_build
+_*
+.rebar
+.rebar3
+.eunit
+*.beam
+*.plt
+*.swp
+*.swo
+.erlang.cookie
+erl_crash.dump
+rebar3.crashdump

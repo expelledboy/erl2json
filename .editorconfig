@@ -1,0 +1,13 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+root = true
+
+[*]
+end_of_line = LF
+
+# https://github.com/erlang/otp/blob/master/.editorconfig
+[*.{erl,hrl}]
+indent_style = space
+indent_size = 4
+tab_width = 8
+insert_final_newline = true

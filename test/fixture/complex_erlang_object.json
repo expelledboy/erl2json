@@ -1,0 +1,25 @@
+{
+  "type": "tuple",
+  "record": "ok",
+  "values": [
+    [
+      {
+        "type": "tuple",
+        "record": "my_record",
+        "values": [
+          "STRING",
+          { "type": "pid", "value": "<7217.891.0>" },
+          { "type": "atom", "value": "undefined" },
+          0,
+          { "type": "boolean", "value": false },
+          { "key1": "value", "key2": 123 }
+        ]
+      },
+      {
+        "type": "tuple",
+        "values": ["data", 1234, { "type": "atom", "value": "undefined" }]
+      },
+      { "key1": { "type": "binary", "value": "dmFsdWU=" }, "key2": 123 }
+    ]
+  ]
+}
