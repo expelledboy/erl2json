@@ -1,16 +1,18 @@
 { pkgs, self, buildRebar3 }:
 
 let
-  version = if self ? shortRev
-  then
-    "${self.lastModifiedDate}-${self.shortRev}"
-  else
-    "${self.lastModifiedDate}-dirty";
-in buildRebar3 {
+  version =
+    if self ? shortRev
+    then
+      "${self.lastModifiedDate}-${self.shortRev}"
+    else
+      "${self.lastModifiedDate}-dirty";
+in
+buildRebar3 {
   name = "erl2json";
   inherit version;
   src = self;
-  beamDeps = [];
+  beamDeps = [ ];
   buildPhase = ''
     rebar3 escriptize
   '';

@@ -1,5 +1,7 @@
 # erl2json
 
+[![ci](https://github.com/expelledboy/erl2json/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/expelledboy/erl2json/actions/workflows/ci.yml)
+
 > Parse Erlang terms as strings into a json, preserving its type
 
 ### Example

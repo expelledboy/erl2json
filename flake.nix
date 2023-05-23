@@ -9,23 +9,25 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         beamPkgs = pkgs.beam.packagesWith pkgs.beam.interpreters.erlangR23;
+        inCI = builtins.getEnv "CI" != "";
       in
       rec {
-        defaultPackage = beamPkgs.callPackage
-          ./nix/package.nix
-          { inherit self; };
-        packages = flake-utils.lib.flattenTree {
-          erl2json = defaultPackage;
-        };
+        packages.erl2json = beamPkgs.callPackage ./nix/package.nix { inherit self; };
+
+        packages.default = packages.erl2json;
+
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; with beamPkgs; [
-            defaultPackage
             just
             bats
             rebar3
             erlang
+            nixpkgs-fmt
+            packages.default
+          ] ++ (pkgs.lib.lists.optionals (!inCI) [
+            act
             erlang-ls
-          ];
+          ]);
 
           shellHook = ''
             git config --local core.hooksPath .github/hooks
