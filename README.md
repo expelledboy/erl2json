@@ -20,7 +20,7 @@ Imagine you have a file with the following content:
 ```
 
 ```bash {cmd}
-cat example.erl | erl2json
+cat examples/readme.erl | erl2json
 ```
 
 ```json
@@ -55,18 +55,21 @@ cat example.erl | erl2json
 The utility `jq` can be used to transform the json into anything you want.
 
 
-```erlang
-[{person, "Mary", 32},
- {person, "John", 42},
- {person, "Jane", 22}]
-```
-
 ```bash {cmd}
-erl2json < persons.erl | jq '.[] | select(.record == "person") | .values[0]'
+erl2json < examples/readme.erl | jq '.values[0] | {
+  count: .[0],
+  atoms: .[1] | map(.value),
+  person: .[2].values | {
+    name: .[0],
+    age: .[1]
+  },
+}'
 ```
 
-```
-"Mary"
-"John"
-"Jane"
+```json
+{
+  "count": [ 1, 2, 3 ],
+  "atoms": [ "atoms", "wrapped" ],
+  "person": { "name": "John", "age": 42 }
+}
 ```
