@@ -144,7 +144,14 @@ from_string(Str) when is_list(Str) ->
 
 %% --
 
-main(_Args) -> stdout(from_string(read_stdin(""))).
+main(_Args) ->
+    try
+        stdout(from_string(read_stdin("")))
+    catch
+        error:{badmatch, {error, {_, erl_parse, Error}}} ->
+            io:format(standard_error, "Error Parsing Erlang: ~s~n", [Error]),
+            halt(1)
+    end.
 
 read_stdin(IO) ->
     case io:get_line("") of
