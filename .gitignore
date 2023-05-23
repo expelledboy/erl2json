@@ -11,3 +11,4 @@ _*
 .erlang.cookie
 erl_crash.dump
 rebar3.crashdump
+result

@@ -73,3 +73,16 @@ erl2json < examples/readme.erl | jq '.values[0] | {
   "person": { "name": "John", "age": 42 }
 }
 ```
+
+### Installation
+
+Via nix flakes:
+
+```bash {cmd}
+# install it
+nix profile install github:expelledboy/erl2json
+
+# or run directly
+cat examples/readme.erl | nix run github:expelledboy/erl2json
+```
+
