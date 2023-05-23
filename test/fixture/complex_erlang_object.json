@@ -19,7 +19,10 @@
         "type": "tuple",
         "values": ["data", 1234, { "type": "atom", "value": "undefined" }]
       },
-      { "key1": { "type": "binary", "value": "dmFsdWU=" }, "key2": 123 }
+      {
+        "key1": { "type": "binary", "value": "dmFsdWU=" },
+        "key2": { "type": "bit_string", "value": [2] }
+      }
     ]
   ]
 }

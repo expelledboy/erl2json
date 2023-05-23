@@ -1,9 +1,20 @@
 build:
 	rebar3 escriptize
 
-test: build
+eunit:
+	rebar3 eunit
+
+bats: build
 	bats test/*.bats
-	rebar3 do eunit --cover, cover --verbose
+
+test: eunit bats
+
+coverage:
+	rebar3 eunit -c
+	rebar3 cover -v
 
 lint:
 	rebar3 fmt --write
+
+ci: && bats coverage
+	rebar3 fmt --check

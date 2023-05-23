@@ -8,14 +8,19 @@
 -spec encode(term()) -> {json, atom(), list() | binary()}.
 -spec is_proplist(term()) -> boolean().
 -spec pre_encode_pids(string()) -> string().
+-spec pre_encode_bit_strings(string()) -> string().
 -spec abstract_to_json(term()) -> string().
--export([encode/1, is_proplist/1, pre_encode_pids/1, abstract_to_json/1]).
+-export([encode/1, is_proplist/1, pre_encode_pids/1, pre_encode_bit_strings/1, abstract_to_json/1]).
 -endif.
 
 %% --
 
 encode({json, _, _} = Encoded) ->
     Encoded;
+encode({pid, PreEncoded}) ->
+    {json, pid, PreEncoded};
+encode({bit_string, PreEncoded}) ->
+    {json, bit_string, PreEncoded};
 % wrapped terms
 encode(Value) when is_boolean(Value) ->
     {json, boolean, atom_to_list(Value)};
@@ -35,8 +40,6 @@ encode(Value) when is_function(Value) ->
 % binary => base64(binary)
 encode(Value) when is_binary(Value) ->
     {json, binary, base64:encode(Value)};
-encode({pid, PreEncoded}) ->
-    {json, pid, PreEncoded};
 % assuming {atom,...} is always a record
 encode(Tuple) when is_tuple(Tuple), is_atom(element(1, Tuple)) ->
     Type = atom_to_list(element(1, Tuple)),
@@ -105,6 +108,7 @@ abstract_to_json({json, Type, Value}) ->
         port -> wrap("port", Value);
         function -> Value;
         binary -> wrap("binary", format("\"~s\"", [Value]));
+        bit_string -> wrap("bit_string", format("~p", [Value]));
         string -> format("\"~s\"", [Value]);
         ok -> wrap("ok", Value);
         error -> wrap("error", Value);
@@ -140,7 +144,7 @@ tuple_to_json(Tuple) ->
 from_string(Str) when is_binary(Str) ->
     from_string(binary_to_list(Str));
 from_string(Str) when is_list(Str) ->
-    abstract_to_json(encode(eval_erl(pre_encode_pids(Str)))).
+    abstract_to_json(encode(eval_erl(pre_encode(Str)))).
 
 %% --
 
@@ -166,7 +170,16 @@ stdout(IO) ->
 %% --
 
 pre_encode_pids(Str) when is_list(Str) ->
-    re:replace(Str, "(<[0-9\\.]*>)", "{pid,\"\\1\"}", [{return, list}, global]).
+    re:replace(Str, "(<[0-9]+\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}", [{return, list}, global]).
+
+pre_encode_bit_strings(Str) when is_list(Str) ->
+    re:replace(Str, "<<([0-9 ,]*)>>", "{bit_string,[\\1]}", [{return, list}, global]).
+
+pre_encode(Str) ->
+    lists:foldl(fun(F, Acc) -> F(Acc) end, Str, [
+        fun pre_encode_pids/1,
+        fun pre_encode_bit_strings/1
+    ]).
 
 eval_erl(Expression) when is_list(Expression) ->
     {ok, Tokens, _} = erl_scan:string(format("~s.", [Expression])),

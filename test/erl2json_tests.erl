@@ -3,6 +3,15 @@
 -define(module, erl2json).
 -import(?module, [abstract_to_json/1]).
 -import(?module, [encode/1]).
+-import(?module, [pre_encode_pids/1]).
+-import(?module, [pre_encode_bit_strings/1]).
+
+%% --
+
+pre_encode_test() ->
+    ?assertEqual("{pid,\"<0.0.0>\"}", pre_encode_pids("<0.0.0>")),
+    ?assertEqual("{bit_string,[2,3,4]}", pre_encode_bit_strings("<<2,3,4>>")).
+
 %% --
 
 basic_types() ->
