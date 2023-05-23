@@ -20,10 +20,10 @@ lint:
 ci: bats coverage lint
 
 ci-test:
-	act push --verbose
+	act push
 
 quick-test: build
-	nix run github:expelledboy/erl2json < examples/readme.erl | jq '.record'
+	nix run . < examples/readme.erl | jq -c '{ test: .record }'
 
 pre-commit: lint
 
