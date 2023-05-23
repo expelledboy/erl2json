@@ -26,6 +26,10 @@
             erlang
             erlang-ls
           ];
+
+          shellHook = ''
+            git config --local core.hooksPath .github/hooks
+          '';
         };
       }
     );

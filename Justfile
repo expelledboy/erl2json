@@ -14,7 +14,13 @@ coverage:
 	rebar3 cover -v
 
 lint:
-	rebar3 fmt --write
-
-ci: && bats coverage
 	rebar3 fmt --check
+
+ci: bats coverage lint
+
+quick-test: build
+	nix run github:expelledboy/erl2json < examples/readme.erl | jq '.record'
+
+pre-commit: lint
+
+pre-push: quick-test
