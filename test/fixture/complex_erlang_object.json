@@ -25,7 +25,8 @@
       },
       {
         "type": "tuple",
-        "values": [{ "type": "pid", "value": "<core1@crimson.local.1775.0>" }]
+        "record":"erlang_26_pid",
+        "values": [{ "type": "pid", "value": "<core1@alpha.local.1775.0>"}]
       }
     ]
   ]
