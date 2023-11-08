@@ -172,12 +172,16 @@ stdout(IO) ->
 pre_encode_pids(Str) when is_list(Str) ->
     re:replace(Str, "(<[0-9]+\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}", [{return, list}, global]).
 
+pre_encode_r26_pids(Str) when is_list(Str) ->
+    re:replace(Str, "(<.*@.*\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}", [{return, list}, global]).  
+
 pre_encode_bit_strings(Str) when is_list(Str) ->
     re:replace(Str, "<<([0-9 ,]*)>>", "{bit_string,[\\1]}", [{return, list}, global]).
 
 pre_encode(Str) ->
     lists:foldl(fun(F, Acc) -> F(Acc) end, Str, [
         fun pre_encode_pids/1,
+        fun pre_encode_r26_pids/1,
         fun pre_encode_bit_strings/1
     ]).
 

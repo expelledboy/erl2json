@@ -22,6 +22,11 @@
       {
         "key1": { "type": "binary", "value": "dmFsdWU=" },
         "key2": { "type": "bit_string", "value": [2] }
+      },
+      {
+        "type": "tuple",
+        "record":"erlang_26_pid",
+        "values": [{ "type": "pid", "value": "<core1@alpha.local.1775.0>"}]
       }
     ]
   ]

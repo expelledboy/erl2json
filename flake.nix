@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -8,7 +8,7 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        beamPkgs = pkgs.beam.packagesWith pkgs.beam.interpreters.erlangR23;
+        beamPkgs = pkgs.beam.packagesWith pkgs.beam.interpreters.erlangR26;
         inCI = builtins.getEnv "CI" != "";
       in
       rec {
