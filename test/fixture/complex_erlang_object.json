@@ -22,6 +22,10 @@
       {
         "key1": { "type": "binary", "value": "dmFsdWU=" },
         "key2": { "type": "bit_string", "value": [2] }
+      },
+      {
+        "type": "tuple",
+        "values": [{ "type": "pid", "value": "<core1@crimson.local.1775.0>" }]
       }
     ]
   ]
