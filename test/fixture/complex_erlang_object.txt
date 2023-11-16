@@ -2,5 +2,6 @@
     {my_record, "STRING", <7217.891.0>, undefined, 0, false, [{key1, "value"}, {key2, 123}]},
     {"data", 1234, undefined},
     #{<<"key1">> => <<"value">>, <<"key2">> => <<2>>},
-    {erlang_26_pid, <core1@alpha.local.1775.0>}
+    {erlang_26_pid, <core1@alpha.local.1775.0>},
+    {reserved_words, receive}
 ]}

@@ -98,7 +98,6 @@ encode_nested(Map) when is_map(Map) ->
 %% --
 
 abstract_to_json({json, Type, Value}) ->
-    % io:format("abstract_to_json: ~p~n", [{json, Type, Value}]),
     case Type of
         atom -> wrap("atom", format("\"~s\"", [Value]));
         boolean -> wrap("boolean", Value);
@@ -144,7 +143,11 @@ tuple_to_json(Tuple) ->
 from_string(Str) when is_binary(Str) ->
     from_string(binary_to_list(Str));
 from_string(Str) when is_list(Str) ->
-    abstract_to_json(encode(eval_erl(pre_encode(Str)))).
+    abstract_to_json(
+        encode(
+            eval_erl(pre_encode(Str))
+        )
+    ).
 
 %% --
 
@@ -173,7 +176,7 @@ pre_encode_pids(Str) when is_list(Str) ->
     re:replace(Str, "(<[0-9]+\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}", [{return, list}, global]).
 
 pre_encode_r26_pids(Str) when is_list(Str) ->
-    re:replace(Str, "(<.*@.*\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}", [{return, list}, global]).  
+    re:replace(Str, "(<.*@.*\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}", [{return, list}, global]).
 
 pre_encode_bit_strings(Str) when is_list(Str) ->
     re:replace(Str, "<<([0-9 ,]*)>>", "{bit_string,[\\1]}", [{return, list}, global]).
@@ -185,9 +188,57 @@ pre_encode(Str) ->
         fun pre_encode_bit_strings/1
     ]).
 
+%% --
+
+is_reserved(K) ->
+    lists:member(K, [
+        'after',
+        'and',
+        'andalso',
+        'band',
+        'begin',
+        'bnot',
+        'bor',
+        'bsl',
+        'bsr',
+        'bxor',
+        'case',
+        'catch',
+        'cond',
+        'div',
+        'end',
+        'fun',
+        'if',
+        'let',
+        'maybe',
+        'not',
+        'of',
+        'or',
+        'orelse',
+        'receive',
+        'rem',
+        'try',
+        'when',
+        'xor'
+    ]).
+unreserve(Form = {Reserved, LineNr}) when is_atom(Reserved) ->
+    case is_reserved(Reserved) of
+        true ->
+            {'atom', LineNr, Reserved};
+        false ->
+            Form
+    end;
+unreserve(Form = {_F, _LineNr}) ->
+    Form;
+unreserve({Type, Value, _LineNr}) ->
+    {Type, Value, _LineNr}.
+
+%% --
+
 eval_erl(Expression) when is_list(Expression) ->
     {ok, Tokens, _} = erl_scan:string(format("~s.", [Expression])),
-    {ok, Parsed} = erl_parse:parse_exprs(Tokens),
+    UnreservedTokens = [unreserve(T) || T <- Tokens],
+    {ok, Parsed} = erl_parse:parse_exprs(UnreservedTokens),
     {value, Result, _} = erl_eval:exprs(Parsed, []),
     Result.
 

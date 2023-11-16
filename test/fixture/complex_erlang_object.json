@@ -25,8 +25,13 @@
       },
       {
         "type": "tuple",
-        "record":"erlang_26_pid",
-        "values": [{ "type": "pid", "value": "<core1@alpha.local.1775.0>"}]
+        "record": "erlang_26_pid",
+        "values": [{ "type": "pid", "value": "<core1@alpha.local.1775.0>" }]
+      },
+      {
+        "type": "tuple",
+        "record": "reserved_words",
+        "values": [{ "type": "atom", "value": "receive" }]
       }
     ]
   ]
