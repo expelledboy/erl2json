@@ -1,0 +1,49 @@
+{
+    "type": "tuple",
+    "record": "ok",
+    "values": [
+        [
+            {
+                "type": "tuple",
+                "record": "atom",
+                "values": [
+                    {
+                        "type": "pid",
+                        "value": "<core1@fuku.local.1727.0>"
+                    },
+                    "string",
+                    [
+                        {
+                            "type": "tuple",
+                            "record": "atom2",
+                            "values": [
+                                {
+                                    "type": "atom",
+                                    "value": "atom3"
+                                },
+                                7,
+                                {
+                                    "type": "atom",
+                                    "value": "atom4"
+                                },
+                                [
+                                    {
+                                        "reserved_word": {
+                                            "type": "atom",
+                                            "value": "receive"
+                                        }
+                                    }
+                                ],
+                                []
+                            ]
+                        }
+                    ],
+                    {
+                        "type": "atom",
+                        "value": "node1"
+                    }
+                ]
+            }
+        ]
+    ]
+}

@@ -1,0 +1,16 @@
+{ok, [
+   {atom, 
+   <core1@fuku.local.1727.0>, 
+   "string", 
+   [
+         {atom2, 
+            atom3, 
+            7, 
+            atom4, 
+            [[   
+               {reserved_word, receive}
+            ]], 
+            []
+         }
+   ],    
+node1}]}

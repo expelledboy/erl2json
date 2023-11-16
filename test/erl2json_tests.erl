@@ -94,3 +94,11 @@ complex_test() ->
     {ok, Json} = file:read_file("test/fixture/complex_erlang_object.json"),
     NoWhitespace = fun(X) -> re:replace(X, "\\s+", "", [global, {return, list}]) end,
     ?assertEqual(NoWhitespace(Json), ?module:from_string(Erl)).
+
+
+log_output_test() ->
+        {ok, Erl} = file:read_file("test/fixture/new_pid_and_reserved_words.txt"),
+        {ok, Json} = file:read_file("test/fixture/new_pid_and_reserved_words.json"),
+        NoWhitespace = fun(X) -> re:replace(X, "\\s+", "", [global, {return, list}]) end,
+        ?assertEqual(NoWhitespace(Json), ?module:from_string(Erl)).
+    

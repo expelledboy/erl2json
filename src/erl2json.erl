@@ -144,9 +144,53 @@ tuple_to_json(Tuple) ->
 from_string(Str) when is_binary(Str) ->
     from_string(binary_to_list(Str));
 from_string(Str) when is_list(Str) ->
-    abstract_to_json(encode(eval_erl(pre_encode(Str)))).
+    P = pre_encode(Str),    
+    abstract_to_json(encode(eval_erl(P))).
 
 %% --
+
+
+is_reserved(K) ->
+    lists:member(K, [
+        'after', 
+        'and', 
+        'andalso', 
+        'band', 
+        'begin', 
+        'bnot', 
+        'bor', 
+        'bsl', 
+        'bsr', 
+        'bxor', 
+        'case', 
+        'catch', 
+        'cond', 
+        'div',
+        'end', 
+        'fun', 
+        'if', 
+        'let', 
+        'maybe', 
+        'not', 
+        'of', 
+        'or', 
+        'orelse', 
+        'receive', 
+        'rem', 
+        'try', 
+        'when', 
+        'xor'
+    ]).
+unreserve(Form = {Reserved,LineNr}) when is_atom(Reserved) -> 
+    case is_reserved(Reserved) of   
+        true ->
+        { 'atom', LineNr, Reserved};
+        false ->
+            Form
+        end;
+unreserve(Form = {_F,_LineNr}) -> 
+    Form;
+unreserve({Type, Value, _LineNr}) -> {Type, Value, _LineNr}.
 
 main(_Args) ->
     try
@@ -173,7 +217,8 @@ pre_encode_pids(Str) when is_list(Str) ->
     re:replace(Str, "(<[0-9]+\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}", [{return, list}, global]).
 
 pre_encode_r26_pids(Str) when is_list(Str) ->
-    re:replace(Str, "(<.*@.*\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}", [{return, list}, global]).  
+    %% "<core1@crimson.local.1775.0>"
+    re:replace(Str, "(<[a-zA-Z0-9]+@[a-zA-Z0-9\.]+\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}", [{return, list}, global]).  
 
 pre_encode_bit_strings(Str) when is_list(Str) ->
     re:replace(Str, "<<([0-9 ,]*)>>", "{bit_string,[\\1]}", [{return, list}, global]).
@@ -187,7 +232,9 @@ pre_encode(Str) ->
 
 eval_erl(Expression) when is_list(Expression) ->
     {ok, Tokens, _} = erl_scan:string(format("~s.", [Expression])),
-    {ok, Parsed} = erl_parse:parse_exprs(Tokens),
+    T = [ unreserve(T) || T <- Tokens ],
+    
+    {ok, Parsed} = erl_parse:parse_exprs(T),
     {value, Result, _} = erl_eval:exprs(Parsed, []),
     Result.
 
