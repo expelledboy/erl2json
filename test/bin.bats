@@ -42,3 +42,12 @@ setup() {
     assert bash -o pipefail -c "echo '$output' | jq empty"
     assert bash -o pipefail -c "echo '$output' | jq '.values[0][0].record' | grep -q 'record'"
 }
+
+@test "escape special characters" {
+    run $BIN <<<'"\n"'
+    assert_success
+    assert_output '"\\n"'
+
+    run bash -o pipefail -c "echo '\"\\n\"' | $BIN | jq empty"
+    assert_success
+}

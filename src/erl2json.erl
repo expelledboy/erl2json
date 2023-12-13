@@ -95,6 +95,26 @@ encode_nested(Map) when is_map(Map) ->
 
 %% --
 
+escape(List) when is_list(List) ->
+    escape(<<>>, list_to_binary(List));
+escape(Binary) when is_binary(Binary) ->
+    escape(<<>>, Binary).
+
+escape(Acc, <<>>) ->
+    Acc;
+escape(Acc, Binary) ->
+    case Binary of
+        <<"\b", Rest/binary>> -> escape(<<Acc/binary, "\\\\b">>, Rest);
+        <<"\f", Rest/binary>> -> escape(<<Acc/binary, "\\\\f">>, Rest);
+        <<"\n", Rest/binary>> -> escape(<<Acc/binary, "\\\\n">>, Rest);
+        <<"\r", Rest/binary>> -> escape(<<Acc/binary, "\\\\r">>, Rest);
+        <<"\t", Rest/binary>> -> escape(<<Acc/binary, "\\\\t">>, Rest);
+        <<"\v", Rest/binary>> -> escape(<<Acc/binary, "\\\\v">>, Rest);
+        <<Char, Rest/binary>> -> escape(<<Acc/binary, Char>>, Rest)
+    end.
+
+%% --
+
 abstract_to_json({json, Type, Value}) ->
     case Type of
         atom -> wrap("atom", format("\"~s\"", [Value]));
@@ -106,7 +126,7 @@ abstract_to_json({json, Type, Value}) ->
         function -> Value;
         binary -> wrap("binary", format("\"~s\"", [Value]));
         bit_string -> wrap("bit_string", format("~p", [Value]));
-        string -> format("\"~s\"", [Value]);
+        string -> format("\"~s\"", [escape(Value)]);
         ok -> wrap("ok", Value);
         error -> wrap("error", Value);
         tuple -> tuple_to_json(Value);

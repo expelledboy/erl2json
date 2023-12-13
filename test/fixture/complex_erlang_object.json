@@ -32,6 +32,11 @@
         "type": "tuple",
         "record": "reserved_words",
         "values": [{ "type": "atom", "value": "receive" }]
+      },
+      {
+        "type": "tuple",
+        "record": "escape_special_chars",
+        "values": [["\\b", "\\t", "\\n", "\\f", "\\r"]]
       }
     ]
   ]

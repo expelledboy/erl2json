@@ -3,5 +3,6 @@
     {"data", 1234, undefined},
     #{<<"key1">> => <<"value">>, <<"key2">> => <<2>>},
     {erlang_26_pid, <core1@alpha.local.1775.0>},
-    {reserved_words, receive}
+    {reserved_words, receive},
+    {escape_special_chars, ["\b", "\t", "\n", "\f", "\r"]}
 ]}
