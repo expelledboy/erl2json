@@ -19,7 +19,10 @@
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; with beamPkgs; [
             just
-            bats
+            (bats.withLibraries (libexec: with libexec; [
+              bats-support
+              bats-assert
+            ]))
             rebar3
             erlang
             nixpkgs-fmt

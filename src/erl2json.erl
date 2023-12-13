@@ -7,10 +7,8 @@
 -ifdef(TEST).
 -spec encode(term()) -> {json, atom(), list() | binary()}.
 -spec is_proplist(term()) -> boolean().
--spec pre_encode_pids(string()) -> string().
--spec pre_encode_bit_strings(string()) -> string().
 -spec abstract_to_json(term()) -> string().
--export([encode/1, is_proplist/1, pre_encode_pids/1, pre_encode_bit_strings/1, abstract_to_json/1]).
+-export([encode/1, is_proplist/1, abstract_to_json/1, pre_encode/1]).
 -endif.
 
 %% --
@@ -172,21 +170,19 @@ stdout(IO) ->
 
 %% --
 
-pre_encode_pids(Str) when is_list(Str) ->
-    re:replace(Str, "(<[0-9]+\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}", [{return, list}, global]).
-
-pre_encode_r26_pids(Str) when is_list(Str) ->
-    re:replace(Str, "(<.*@.*\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}", [{return, list}, global]).
-
-pre_encode_bit_strings(Str) when is_list(Str) ->
-    re:replace(Str, "<<([0-9 ,]*)>>", "{bit_string,[\\1]}", [{return, list}, global]).
-
 pre_encode(Str) ->
-    lists:foldl(fun(F, Acc) -> F(Acc) end, Str, [
-        fun pre_encode_pids/1,
-        fun pre_encode_r26_pids/1,
-        fun pre_encode_bit_strings/1
-    ]).
+    Replacements = [
+        {bit_string, "<<([0-9 ,]*)>>", "{bit_string,[\\1]}"},
+        {pid, "(<[0-9]+\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}"},
+        {r26_pid, "(<.*@.*\.[0-9]+\.[0-9]+>)", "{pid,\"\\1\"}"}
+    ],
+    lists:foldl(
+        fun({_, Pattern, Replacement}, Acc) ->
+            re:replace(Acc, Pattern, Replacement, [{return, list}, global])
+        end,
+        Str,
+        Replacements
+    ).
 
 %% --
 

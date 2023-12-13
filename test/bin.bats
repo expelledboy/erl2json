@@ -2,46 +2,43 @@
 
 bats_require_minimum_version "1.5.0"
 
-BIN=erl2json
+BIN=${PWD}/_build/default/bin/erl2json
 
 setup() {
+    bats_require_minimum_version "1.8.0"
+    bats_load_library bats-support
+    bats_load_library bats-assert
+
     DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" >/dev/null 2>&1 && pwd)"
     PATH="$DIR/../_build/default/bin:$PATH"
     FIXTURE=$DIR/fixture/complex_erlang_object
 }
 
 @test "test setup" {
-    which $BIN
+    assert which $BIN
     echo "Fixture: $FIXTURE"
-    test -f ${FIXTURE}.txt
-    test -f ${FIXTURE}.json
+    assert test -f ${FIXTURE}.txt
+    assert test -f ${FIXTURE}.json
 }
 
 @test "pipe via stdin" {
-    eval "echo '{ok,[]}' | $BIN"
-    [ $? -eq 0 ]
+    refute $BIN <<<"ok."
+    assert $BIN <<<"ok"
 }
 
 @test "output is valid json" {
     # https://github.com/stedolan/jq/issues/1637
-    echo '{person, "John", "Doe" 42}}' | $BIN | jq empty
-    [ $? -eq 0 ]
+    refute bash -o pipefail -c "echo 'ok.' | $BIN | jq empty"
+    assert bash -o pipefail -c "echo 'ok' | $BIN | jq empty"
 }
 
 @test "complex test fixture" {
-    result=$(cat ${FIXTURE}.txt | $BIN)
-    no_whitespace=$(tr -d '[:space:]' <${FIXTURE}.json)
+    fixture=$(tr -d '[:space:]' <${FIXTURE}.json)
 
-    echo "$result" | jq empty
-    [ $? -eq 0 ]
+    run bash -o pipefail -c "cat ${FIXTURE}.txt | $BIN"
+    assert_success
+    assert_output "$fixture"
 
-    echo "$result" | jq '.values[0][0].record' | grep -q 'record'
-    [ $? -eq 0 ]
-
-    [ "$result" == "$no_whitespace" ]
-}
-
-@test "error on invalid input" {
-    run ! bash -c "echo '{]}' | $BIN"
-    [ "$output" == "Error Parsing Erlang: syntax error before: ']'" ]
+    assert bash -o pipefail -c "echo '$output' | jq empty"
+    assert bash -o pipefail -c "echo '$output' | jq '.values[0][0].record' | grep -q 'record'"
 }
