@@ -9,7 +9,7 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         beamPkgs = pkgs.beam.packagesWith pkgs.beam.interpreters.erlangR26;
-        inCI = builtins.getEnv "CI" != "";
+        inCI = builtins.getEnv "CI" == "true";
       in
       rec {
         packages.erl2json = beamPkgs.callPackage ./nix/package.nix { inherit self; };
