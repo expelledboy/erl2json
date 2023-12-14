@@ -50,4 +50,22 @@ setup() {
 
     run bash -o pipefail -c "echo '\"\\n\"' | $BIN | jq empty"
     assert_success
+
+    chars=(
+        '\b'
+        '\e'
+        '\f'
+        '\n'
+        '\r'
+        '\s'
+        '\t'
+        '\v'
+    )
+
+    for char in "${chars[@]}"; do
+        echo "\"$char\""
+        echo "\"\\$char\""
+        output=$(echo "\"$char\"" | $BIN)
+        assert_equal "$output" "\"\\$char\""
+    done
 }

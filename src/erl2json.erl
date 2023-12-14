@@ -95,6 +95,8 @@ encode_nested(Map) when is_map(Map) ->
 
 %% --
 
+% https://www.erlang.org/doc/reference_manual/data_types#escape-sequences
+
 escape(List) when is_list(List) ->
     escape(<<>>, list_to_binary(List));
 escape(Binary) when is_binary(Binary) ->
@@ -105,9 +107,11 @@ escape(Acc, <<>>) ->
 escape(Acc, Binary) ->
     case Binary of
         <<"\b", Rest/binary>> -> escape(<<Acc/binary, "\\\\b">>, Rest);
+        <<"\e", Rest/binary>> -> escape(<<Acc/binary, "\\\\e">>, Rest);
         <<"\f", Rest/binary>> -> escape(<<Acc/binary, "\\\\f">>, Rest);
         <<"\n", Rest/binary>> -> escape(<<Acc/binary, "\\\\n">>, Rest);
         <<"\r", Rest/binary>> -> escape(<<Acc/binary, "\\\\r">>, Rest);
+        <<"\s", Rest/binary>> -> escape(<<Acc/binary, "\\\\s">>, Rest);
         <<"\t", Rest/binary>> -> escape(<<Acc/binary, "\\\\t">>, Rest);
         <<"\v", Rest/binary>> -> escape(<<Acc/binary, "\\\\v">>, Rest);
         <<Char, Rest/binary>> -> escape(<<Acc/binary, Char>>, Rest)
